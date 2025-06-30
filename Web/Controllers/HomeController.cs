@@ -56,7 +56,7 @@ namespace Web.Controllers
         }
         #endregion
 
-        #region
+        #region Consultas
         [HttpGet]
         public IActionResult ObtenerListpersonayfrase()
         {
