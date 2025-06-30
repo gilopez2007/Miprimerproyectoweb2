@@ -43,7 +43,7 @@ namespace Web.Controllers
         public IActionResult Agregarpersonayfrase(personas_VM personas)
         {
             string? errorMessage = null;
-            bool resultado = true; /*ln.AgregarColaboradorYcontrato(personas, out errorMessage);*/
+            bool resultado = ln.AgregarNuevonombrepersonaynuevafrase(personas, out errorMessage);
 
             if (resultado)
             {
@@ -52,6 +52,29 @@ namespace Web.Controllers
             else
             {
                 return Json(new { success = false, error = errorMessage });
+            }
+        }
+        #endregion
+
+        #region
+        [HttpGet]
+        public IActionResult ObtenerListpersonayfrase()
+        {
+            List<personas_VM> Listapersona = new List<personas_VM>();
+            string? errorMessage = null;
+
+            // Llamar a tu función para obtener la lista de usuarios
+            bool exito = ln.obtenerlistadepersonayfrase(ref Listapersona, out errorMessage);
+
+            if (exito)
+            {
+                // Devolver la lista de usuarios en el formato esperado por DataTables
+                return Json(new { data = Listapersona });
+            }
+            else
+            {
+                // Devolver el mensaje de error en caso de fallo
+                return Json(new { error = errorMessage });
             }
         }
         #endregion

@@ -1,4 +1,73 @@
-﻿
+﻿cargartabla();
+function cargartabla() {
+    // Verificar si ya existe una instancia de DataTables y destruirla si es necesario
+    if ($.fn.DataTable.isDataTable('#tablaPersonas')) {
+        $('#tablaPersonas').DataTable().destroy();
+    }
+
+    $.ajax({
+        url: '/Home/ObtenerListpersonayfrase',
+        type: 'GET',
+        success: function (response) {
+            if (response.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.error
+                });
+                return;
+            }
+
+            $('#tablaPersonas').DataTable({
+                data: response.data, // Utiliza los datos recibidos en la respuesta AJAX
+                columns: [
+                    { data: 'Nombre' },
+                    { data: 'Apellido' },
+                    { data: 'Edad' },
+                    { data: 'Frase' },
+
+                   
+                ],
+                order: [[0, 'asc']],
+                responsive: true,
+                dom: 'B',
+                searching: false,
+                buttons: [
+                    {
+                        text: "Nuevo",
+                        className: "btn btn-primary",
+                        action: function (e, dt, node, config) {
+                            $('#divTabla').hide(); // Ocultar el div de la tabla
+                            $('#formulario').show(); // Mostrar el div del formulario de agregar Colaborador
+                        }
+                    },
+                    {
+                        extend: 'excel'
+                    },
+                    {
+                        extend: 'pdf'
+                    },
+                    {
+                        extend: 'print'
+                    }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json'
+                },
+            });
+        },
+        error: function (xhr, status, error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en la solicitud AJAX',
+                text: error
+            });
+        }
+    });
+
+};
+
+
 //document.getElementById("unico").onclick = function () {
 
     
@@ -37,26 +106,26 @@ $('#btnguardarpersonas').on('click', function () {
         type: 'POST',
         data: personas,
         success: function (response) {
-            //if (response.success) {
-            //    Swal.fire({
-            //        icon: 'success',
-            //        title: 'Éxito',
-            //        text: 'El Colaborador y contrato se agregaron exitosamente',
-            //        showConfirmButton: true, // Muestra el botón "OK"
-            //    }).then(function () {
-            //        $('#DivAgregarColaborador').hide();
-            //        $('#TablaDeColavboradores').DataTable().ajax.reload();
-            //        $('#DivTablaColaboradores').show();
-            //        // Limpiar el formulario
-            //        $('#AgregarColaboradorYcontrato')[0].reset();
-            //    });
-            //} else {
-            //    Swal.fire({
-            //        icon: 'error',
-            //        title: 'Error',
-            //        text: response.error || 'Hubo un error al agregar el Colaborador y contrato'
-            //    });
-            //}
+            if (response.success) {
+                swal.fire({
+                    icon: 'success',
+                    title: 'éxito',
+                    text: 'La persona y la frase se agregaron ',
+                    showconfirmbutton: true, // muestra el botón "ok"
+                }).then(function () {
+                    $('#formulario').hide();
+                    $('#tablaPersonas').datatable().ajax.reload();
+                    $('#divTabla').show();
+                    /* limpiar el formulario*/
+                //    $('#agregarcolaboradorycontrato')[0].reset();
+                });
+            } else {
+                swal.fire({
+                    icon: 'error',
+                    title: 'error',
+                    text: response.error || 'hubo un error al agregar el colaborador y contrato'
+                });
+            }
         },
         error: function () {
             Swal.fire({
